@@ -1,11 +1,12 @@
--- LostnLocal Database Schema for XAMPP MySQL
--- Run this in phpMyAdmin or MySQL command line
+-- LostnLocal Database Schema - Simplified for phpMyAdmin Import
+-- Copy and paste this entire content into phpMyAdmin SQL tab
 
+-- Create database (if it doesn't exist)
 CREATE DATABASE IF NOT EXISTS lostnlocal_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE lostnlocal_db;
 
 -- Users table for authentication
-CREATE TABLE IF NOT EXISTS users (
+CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     uid VARCHAR(50) UNIQUE NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
@@ -22,7 +23,7 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 -- User sessions table for JWT token management
-CREATE TABLE IF NOT EXISTS user_sessions (
+CREATE TABLE user_sessions (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     token_hash VARCHAR(255) NOT NULL,
@@ -36,7 +37,7 @@ CREATE TABLE IF NOT EXISTS user_sessions (
 );
 
 -- Activity logs table for security monitoring
-CREATE TABLE IF NOT EXISTS activity_logs (
+CREATE TABLE activity_logs (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NULL,
     action VARCHAR(100) NOT NULL,
@@ -51,8 +52,7 @@ CREATE TABLE IF NOT EXISTS activity_logs (
 );
 
 -- Insert default admin user (password: admin123)
--- Password hash for 'admin123' with salt rounds 12
-INSERT IGNORE INTO users (uid, email, password_hash, display_name, is_admin) VALUES 
+INSERT INTO users (uid, email, password_hash, display_name, is_admin) VALUES 
 ('admin_001', 'admin@lostnlocal.com', '$2y$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj4J9Vz9Kz2C', 'Administrator', TRUE);
 
 -- Create additional indexes for better performance

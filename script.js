@@ -6,10 +6,6 @@ let hiddenGemsData = [];
 let filteredDestinations = [];
 let filteredHotels = [];
 let currentUser = null;
-let authToken = null;
-
-// API Configuration
-const API_BASE_URL = 'api';
 
 // DOM Content Loaded
 document.addEventListener('DOMContentLoaded', function() {
@@ -24,8 +20,8 @@ async function initializeApp() {
     // Set up authentication
     setupAuthentication();
     
-    // Load data from backend API
-    await loadBackendData();
+    // Load sample data
+    loadSampleData();
     
     // Populate UI with loaded data
     populateDestinations();
@@ -39,11 +35,9 @@ async function initializeApp() {
 function setupAuthentication() {
     // Check if user is already logged in from localStorage
     const savedUser = localStorage.getItem('currentUser');
-    const savedToken = localStorage.getItem('authToken');
     
-    if (savedUser && savedToken) {
+    if (savedUser) {
         currentUser = JSON.parse(savedUser);
-        authToken = savedToken;
         isAdmin = currentUser.isAdmin || false;
         updateAuthUI(currentUser);
         
@@ -63,11 +57,7 @@ function updateAuthUI(user) {
     const authNavItem = document.getElementById('authNavItem');
     
     if (user) {
-        // Hide the login button when user is logged in
-        if (authNavItem) {
-            authNavItem.style.display = 'none';
-        }
-        
+        // Update the auth link to show user info
         if (user.isAnonymous) {
             authLink.textContent = 'Guest';
             authLink.href = '#';
@@ -76,44 +66,101 @@ function updateAuthUI(user) {
                 showMessage('You are browsing as a guest. Sign up to submit hidden gems!', 'info');
             };
         } else {
-            authLink.textContent = user.name || 'Profile';
+            authLink.textContent = user.displayName || 'Profile';
             authLink.href = '#';
             authLink.onclick = (e) => {
                 e.preventDefault();
                 showUserMenu();
             };
         }
+        
+        // Add logout button to navigation
+        addLogoutButton();
     } else {
         // Show the login button when user is not logged in
-        if (authNavItem) {
-            authNavItem.style.display = 'block';
-        }
-        
         authLink.textContent = 'Login';
         authLink.href = 'auth.html';
         authLink.onclick = null;
+        
+        // Remove logout button
+        removeLogoutButton();
     }
 }
 
-// Check if user is admin
-async function checkAdminStatus(userId) {
-    try {
-        const usersRef = window.firebase.collection(window.firebase.db, 'users');
-        const userDoc = await window.firebase.getDocs(
-            window.firebase.query(usersRef, window.firebase.where('uid', '==', userId))
-        );
-        
-        if (!userDoc.empty) {
-            const userData = userDoc.docs[0].data();
-            isAdmin = userData.isAdmin || false;
-            console.log('Admin status:', isAdmin);
-            
-            if (isAdmin) {
-                showMessage('Welcome back, Admin!', 'success');
-            }
-        }
-    } catch (error) {
-        console.error('Error checking admin status:', error);
+// Add logout button to navigation
+function addLogoutButton() {
+    // Check if logout button already exists
+    if (document.getElementById('logoutNavItem')) {
+        return;
+    }
+    
+    const navMenu = document.querySelector('.nav-menu');
+    const authNavItem = document.getElementById('authNavItem');
+    
+    // Create a container for user info and admin/logout buttons
+    const userContainer = document.createElement('li');
+    userContainer.className = 'nav-item user-container';
+    userContainer.id = 'logoutNavItem';
+    
+    // Create user info display
+    const userInfo = document.createElement('div');
+    userInfo.className = 'user-info';
+    
+    // Welcome message
+    const welcomeText = document.createElement('span');
+    welcomeText.className = 'welcome-text';
+    welcomeText.textContent = `Welcome, ${currentUser.displayName || 'User'}`;
+    
+    // Admin Dashboard button (if user is admin)
+    let adminButton = '';
+    if (currentUser.isAdmin && currentUser.isAdmin === true) {
+        adminButton = `
+            <button class="admin-dashboard-btn" onclick="showAdminPanel()">
+                Admin Dashboard
+            </button>
+        `;
+    }
+    
+    // Logout button
+    const logoutButton = `
+        <button class="logout-btn" onclick="signOut()">
+            <i class="fas fa-sign-out-alt"></i>
+        </button>
+    `;
+    
+    userInfo.innerHTML = `
+        ${welcomeText.outerHTML}
+        ${adminButton}
+        ${logoutButton}
+    `;
+    
+    userContainer.appendChild(userInfo);
+    
+    // Insert user container right after the auth item
+    if (authNavItem && authNavItem.nextSibling) {
+        navMenu.insertBefore(userContainer, authNavItem.nextSibling);
+    } else {
+        navMenu.appendChild(userContainer);
+    }
+}
+
+// Remove logout button from navigation
+function removeLogoutButton() {
+    const logoutNavItem = document.getElementById('logoutNavItem');
+    if (logoutNavItem) {
+        logoutNavItem.remove();
+    }
+}
+
+// Check if user is admin (frontend only)
+function checkAdminStatus(userId) {
+    // In frontend-only mode, admin status is determined by the user object
+    if (currentUser && currentUser.isAdmin) {
+        isAdmin = true;
+        console.log('Admin status:', isAdmin);
+        showMessage('Welcome back, Admin!', 'success');
+    } else {
+        isAdmin = false;
     }
 }
 
@@ -124,9 +171,9 @@ function showUserMenu() {
     menu.innerHTML = `
         <div class="user-menu-content">
             <h4>Welcome, ${currentUser.displayName || 'User'}!</h4>
-            <p>${isAdmin ? 'Admin Account' : 'Regular User'}</p>
+            <p>${(currentUser.isAdmin && currentUser.isAdmin === true) ? 'Admin Account' : 'Regular User'}</p>
             <div class="user-menu-actions">
-                ${isAdmin ? '<button onclick="showAdminPanel()" class="btn-admin">Admin Panel</button>' : ''}
+                ${(currentUser.isAdmin && currentUser.isAdmin === true) ? '<button onclick="showAdminPanel()" class="btn-admin">Admin Panel</button>' : ''}
                 <button onclick="signOut()" class="btn-logout">Sign Out</button>
             </div>
         </div>
@@ -166,9 +213,12 @@ function showAdminPanel() {
 }
 
 // Sign out user
-async function signOut() {
+function signOut() {
     try {
-        await window.firebase.signOut(window.firebase.auth);
+        currentUser = null;
+        isAdmin = false;
+        localStorage.removeItem('currentUser');
+        updateAuthUI(null);
         showMessage('Signed out successfully!', 'success');
     } catch (error) {
         console.error('Sign out error:', error);
@@ -176,146 +226,128 @@ async function signOut() {
     }
 }
 
-// Load data from backend API
-async function loadBackendData() {
-    try {
-        // Load destinations
-        await loadDestinations();
-        
-        // Load cultural insights
-        await loadCulturalInsights();
-        
-        // Load hotels
-        await loadHotels();
-        
-        // Load hidden gems
-        await loadHiddenGems();
-        
-        console.log("All backend data loaded successfully");
-    } catch (error) {
-        console.error("Error loading backend data:", error);
-        showMessage("Error loading data. Please check your connection.", "error");
-    }
-}
-
-// Set up real-time listeners for data updates
-function setupRealtimeListeners() {
-    // Listen for new hidden gems
-    const gemsRef = window.firebase.collection(window.firebase.db, 'hiddenGems');
-    const approvedGemsQuery = window.firebase.query(gemsRef, window.firebase.where('approved', '==', true));
-    
-    window.firebase.onSnapshot(approvedGemsQuery, (snapshot) => {
-        hiddenGemsData = [];
-        snapshot.forEach((doc) => {
-            hiddenGemsData.push({
-                id: doc.id,
-                ...doc.data()
-            });
-        });
-        populateHiddenGems();
-    });
-    
-    // Listen for new destinations
-    const destinationsRef = window.firebase.collection(window.firebase.db, 'destinations');
-    window.firebase.onSnapshot(destinationsRef, (snapshot) => {
-        destinationsData = [];
-        snapshot.forEach((doc) => {
-            destinationsData.push({
-                id: doc.id,
-                ...doc.data()
-            });
-        });
-        filteredDestinations = [...destinationsData];
-        populateDestinations();
-        populateFilterOptions();
-    });
-    
-    // Listen for new hotels
-    const hotelsRef = window.firebase.collection(window.firebase.db, 'hotels');
-    window.firebase.onSnapshot(hotelsRef, (snapshot) => {
-        hotelsData = [];
-        snapshot.forEach((doc) => {
-            hotelsData.push({
-                id: doc.id,
-                ...doc.data()
-            });
-        });
-        filteredHotels = [...hotelsData];
-        populateHotels();
-    });
-    
-    console.log("Real-time listeners set up successfully");
-}
-
-// Load destinations from PHP API
-async function loadDestinations() {
-    try {
-        const response = await fetch(`${API_BASE_URL}/destinations.php`);
-        const data = await response.json();
-        
-        if (data.success) {
-            destinationsData = data.data;
-            filteredDestinations = [...destinationsData];
-            console.log(`Loaded ${destinationsData.length} destinations from PHP API`);
-        } else {
-            throw new Error(data.message || 'Failed to load destinations');
+// Load sample data for demo purposes
+function loadSampleData() {
+    // Sample destinations data
+    destinationsData = [
+        {
+            id: 1,
+            name: "Eiffel Tower",
+            country: "France",
+            city: "Paris",
+            category: "landmarks",
+            description: "Iconic iron lattice tower and symbol of Paris.",
+            image: "https://images.unsplash.com/photo-1511739001486-6bfe10ce785f?w=400",
+            rating: 4.8,
+            cost: "$$$",
+            coordinates: { lat: 48.8584, lng: 2.2945 }
+        },
+        {
+            id: 2,
+            name: "Machu Picchu",
+            country: "Peru",
+            city: "Cusco",
+            category: "cultural",
+            description: "Ancient Incan citadel high in the Andes Mountains.",
+            image: "https://images.unsplash.com/photo-1526392060635-9d6019884377?w=400",
+            rating: 4.9,
+            cost: "$$",
+            coordinates: { lat: -13.1631, lng: -72.5450 }
+        },
+        {
+            id: 3,
+            name: "Great Barrier Reef",
+            country: "Australia",
+            city: "Cairns",
+            category: "nature",
+            description: "World's largest coral reef system.",
+            image: "https://images.unsplash.com/photo-1583212292454-1fe6229603b7?w=400",
+            rating: 4.7,
+            cost: "$$$",
+            coordinates: { lat: -18.2871, lng: 147.6992 }
         }
-    } catch (error) {
-        console.error("Error loading destinations:", error);
-    }
+    ];
+    
+    // Sample cultural insights data
+    culturalData = [
+        {
+            id: 1,
+            title: "Japanese Tea Ceremony",
+            description: "Experience the traditional art of Japanese tea preparation.",
+            destination: "Kyoto, Japan",
+            icon: "fas fa-leaf"
+        },
+        {
+            id: 2,
+            title: "Flamenco Dancing",
+            description: "Immerse yourself in the passionate art of Spanish flamenco.",
+            destination: "Seville, Spain",
+            icon: "fas fa-music"
+        },
+        {
+            id: 3,
+            title: "Tango Lessons",
+            description: "Learn the sensual dance of Argentina in Buenos Aires.",
+            destination: "Buenos Aires, Argentina",
+            icon: "fas fa-heart"
+        }
+    ];
+    
+    // Sample hotels data
+    hotelsData = [
+        {
+            id: 1,
+            name: "Hotel Plaza",
+            location: "Paris, France",
+            type: "hotel",
+            description: "Luxury hotel in the heart of Paris.",
+            image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400",
+            rating: 4.5,
+            price: 250,
+            amenities: ["WiFi", "Pool", "Gym", "Restaurant"],
+            bookingLink: "https://example.com/book"
+        },
+        {
+            id: 2,
+            name: "Mountain Lodge",
+            location: "Swiss Alps, Switzerland",
+            type: "resort",
+            description: "Cozy mountain retreat with stunning views.",
+            image: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=400",
+            rating: 4.8,
+            price: 180,
+            amenities: ["WiFi", "Spa", "Restaurant", "Skiing"],
+            bookingLink: "https://example.com/book"
+        }
+    ];
+    
+    // Sample hidden gems data
+    hiddenGemsData = [
+        {
+            id: 1,
+            name: "Secret Garden Cafe",
+            location: "Tokyo, Japan",
+            description: "Hidden cafe in a traditional Japanese garden.",
+            category: "food",
+            submittedBy: "Local Explorer"
+        },
+        {
+            id: 2,
+            name: "Crystal Cave",
+            location: "Iceland",
+            description: "Natural ice cave with incredible formations.",
+            category: "nature",
+            submittedBy: "Adventure Seeker"
+        }
+    ];
+    
+    filteredDestinations = [...destinationsData];
+    filteredHotels = [...hotelsData];
+    
+    console.log("Sample data loaded successfully");
 }
 
-// Load cultural insights from PHP API
-async function loadCulturalInsights() {
-    try {
-        const response = await fetch(`${API_BASE_URL}/cultural-insights.php`);
-        const data = await response.json();
-        
-        if (data.success) {
-            culturalData = data.data;
-            console.log(`Loaded ${culturalData.length} cultural insights from PHP API`);
-        } else {
-            throw new Error(data.message || 'Failed to load cultural insights');
-        }
-    } catch (error) {
-        console.error("Error loading cultural insights:", error);
-    }
-}
-
-// Load hotels from PHP API
-async function loadHotels() {
-    try {
-        const response = await fetch(`${API_BASE_URL}/hotels.php`);
-        const data = await response.json();
-        
-        if (data.success) {
-            hotelsData = data.data;
-            filteredHotels = [...hotelsData];
-            console.log(`Loaded ${hotelsData.length} hotels from PHP API`);
-        } else {
-            throw new Error(data.message || 'Failed to load hotels');
-        }
-    } catch (error) {
-        console.error("Error loading hotels:", error);
-    }
-}
-
-// Load hidden gems from PHP API
-async function loadHiddenGems() {
-    try {
-        const response = await fetch(`${API_BASE_URL}/hidden-gems.php`);
-        const data = await response.json();
-        
-        if (data.success) {
-            hiddenGemsData = data.data;
-            console.log(`Loaded ${hiddenGemsData.length} hidden gems from PHP API`);
-        } else {
-            throw new Error(data.message || 'Failed to load hidden gems');
-        }
-    } catch (error) {
-        console.error("Error loading hidden gems:", error);
-    }
-}
+// Frontend-only data management (no backend required)
 
 // Setup navigation
 function setupNavigation() {
@@ -668,8 +700,8 @@ function estimateBudget(e) {
     resultDiv.classList.add('show');
 }
 
-// Submit hidden gem
-async function submitHiddenGem(e) {
+// Submit hidden gem (frontend only)
+function submitHiddenGem(e) {
     e.preventDefault();
     
     // Check if user is authenticated
@@ -687,39 +719,25 @@ async function submitHiddenGem(e) {
     const category = document.getElementById('gemCategory').value;
     
     try {
-        const response = await fetch(`${API_BASE_URL}/hidden-gems.php`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${authToken}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ name, location, description, category })
-        });
+        // Add to local data for immediate display
+        const newGem = {
+            id: Date.now(),
+            name: name,
+            location: location,
+            description: description,
+            category: category,
+            submittedBy: currentUser.displayName || 'User'
+        };
         
-        const data = await response.json();
+        hiddenGemsData.push(newGem);
         
-        if (data.success) {
-            showMessage(data.message, 'success');
-            
-            // Add to local data for immediate display (pending approval)
-            const localGem = {
-                id: data.data.id,
-                name: data.data.name,
-                location: data.data.location,
-                description: data.data.description,
-                category: data.data.category,
-                submittedBy: data.data.submittedBy
-            };
-            hiddenGemsData.push(localGem);
-            
-            // Update display
-            populateHiddenGems();
-            
-            // Reset form
-            e.target.reset();
-        } else {
-            showMessage(data.message || 'Error submitting hidden gem. Please try again.', 'error');
-        }
+        // Update display
+        populateHiddenGems();
+        
+        showMessage('Hidden gem submitted successfully! (Demo mode)', 'success');
+        
+        // Reset form
+        e.target.reset();
         
     } catch (error) {
         console.error('Error saving hidden gem:', error);
@@ -727,8 +745,8 @@ async function submitHiddenGem(e) {
     }
 }
 
-// Submit contact form
-async function submitContactForm(e) {
+// Submit contact form (frontend only)
+function submitContactForm(e) {
     e.preventDefault();
     
     const name = document.getElementById('contactName').value;
@@ -737,24 +755,13 @@ async function submitContactForm(e) {
     const message = document.getElementById('contactMessage').value;
     
     try {
-        const response = await fetch(`${API_BASE_URL}/contact.php`, {
-            method: 'POST',
-            headers: {
-                'Authorization': authToken ? `Bearer ${authToken}` : '',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ name, email, subject, message })
-        });
+        // Simulate form submission
+        console.log('Contact form submitted:', { name, email, subject, message });
         
-        const data = await response.json();
+        showMessage('Message sent successfully! (Demo mode)', 'success');
         
-        if (data.success) {
-            showMessage(data.message, 'success');
-            // Reset form
-            e.target.reset();
-        } else {
-            showMessage(data.message || 'Error sending message. Please try again.', 'error');
-        }
+        // Reset form
+        e.target.reset();
         
     } catch (error) {
         console.error('Error saving contact form:', error);
@@ -786,7 +793,7 @@ function showMessage(text, type) {
     }, 5000);
 }
 
-// Add some CSS for amenities
+// Add some CSS for amenities and logout button
 const style = document.createElement('style');
 style.textContent = `
     .amenities {
@@ -833,6 +840,151 @@ style.textContent = `
     .budget-breakdown li:last-child {
         border-bottom: none;
     }
+    
+    /* Logout button styling */
+    .logout-link {
+        color: #dc3545 !important;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .logout-link:hover {
+        color: #c82333 !important;
+        background-color: rgba(220, 53, 69, 0.1);
+        border-radius: 5px;
+    }
+    
+    .logout-link i {
+        margin-right: 5px;
+    }
+    
+    /* User container styling */
+    .user-container {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .welcome-text {
+        font-size: 0.9rem;
+        color: #333;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+    
+    .admin-dashboard-btn {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+    }
+    
+    .admin-dashboard-btn:hover {
+        background: #0056b3;
+        transform: translateY(-1px);
+    }
+    
+    .logout-btn {
+        background: transparent;
+        color: #dc3545;
+        border: 1px solid #dc3545;
+        padding: 0.5rem;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+    }
+    
+    .logout-btn:hover {
+        background: #dc3545;
+        color: white;
+        transform: translateY(-1px);
+    }
+    
+    /* User menu styling improvements */
+    .user-menu {
+        animation: slideDown 0.3s ease-out;
+    }
+    
+    .user-menu-content {
+        padding: 1rem;
+    }
+    
+    .user-menu-content h4 {
+        margin: 0 0 0.5rem 0;
+        color: #333;
+        font-size: 1.1rem;
+    }
+    
+    .user-menu-content p {
+        margin: 0 0 1rem 0;
+        color: #666;
+        font-size: 0.9rem;
+    }
+    
+    .user-menu-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .btn-logout {
+        background: #dc3545;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: background-color 0.3s ease;
+    }
+    
+    .btn-logout:hover {
+        background: #c82333;
+    }
+    
+    .btn-admin {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: background-color 0.3s ease;
+    }
+    
+    .btn-admin:hover {
+        background: #0056b3;
+    }
+    
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
 `;
 document.head.appendChild(style);
 
@@ -877,10 +1029,21 @@ setTimeout(() => {
     addAdminFeatures();
 }, 2000);
 
-// Add admin features for managing content
+// Frontend-only admin features (no backend required)
 function addAdminFeatures() {
-    // Only add admin features if user is admin
-    if (!isAdmin) {
+    // Only add admin features if user is admin and properly authenticated
+    if (!isAdmin || !currentUser || !currentUser.isAdmin) {
+        return;
+    }
+    
+    // Double-check admin status from localStorage
+    const savedUser = localStorage.getItem('currentUser');
+    if (!savedUser) {
+        return;
+    }
+    
+    const user = JSON.parse(savedUser);
+    if (!user.isAdmin) {
         return;
     }
     
@@ -897,14 +1060,8 @@ function addAdminFeatures() {
     adminSection.className = 'admin-section';
     adminSection.innerHTML = `
         <div class="container">
-            <h2>Admin Panel</h2>
+            <h2>Admin Panel (Demo Mode)</h2>
             <div class="admin-content">
-                <div class="admin-card">
-                    <h3>Pending Hidden Gems</h3>
-                    <div id="pendingGems" class="pending-gems-list">
-                        <!-- Pending gems will be loaded here -->
-                    </div>
-                </div>
                 <div class="admin-card">
                     <h3>Add New Destination</h3>
                     <form id="addDestinationForm">
@@ -948,14 +1105,6 @@ function addAdminFeatures() {
                                 <option value="$$">$$</option>
                                 <option value="$$$">$$$</option>
                             </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="destBookingPrice">Booking Price ($):</label>
-                            <input type="number" id="destBookingPrice" min="0" step="0.01" placeholder="Enter price for booking">
-                        </div>
-                        <div class="form-group">
-                            <label for="destBookingLink">Booking Link (Optional):</label>
-                            <input type="url" id="destBookingLink" placeholder="https://example.com/book">
                         </div>
                         <button type="submit" class="btn-primary">Add Destination</button>
                     </form>
@@ -1001,10 +1150,6 @@ function addAdminFeatures() {
                             <label for="hotelAmenities">Amenities (comma-separated):</label>
                             <input type="text" id="hotelAmenities" placeholder="WiFi, Pool, Gym, Restaurant">
                         </div>
-                        <div class="form-group">
-                            <label for="hotelBookingLink">Booking Link:</label>
-                            <input type="url" id="hotelBookingLink" required placeholder="https://example.com/book">
-                        </div>
                         <button type="submit" class="btn-primary">Add Hotel</button>
                     </form>
                 </div>
@@ -1016,85 +1161,17 @@ function addAdminFeatures() {
     const footer = document.querySelector('.footer');
     document.body.insertBefore(adminSection, footer);
     
-    // Load pending gems
-    loadPendingGems();
-    
     // Set up admin forms
     document.getElementById('addDestinationForm').addEventListener('submit', addNewDestination);
     document.getElementById('addHotelForm').addEventListener('submit', addNewHotel);
 }
 
-// Load pending hidden gems for admin approval
-async function loadPendingGems() {
-    try {
-        const gemsRef = window.firebase.collection(window.firebase.db, 'hiddenGems');
-        const pendingQuery = window.firebase.query(gemsRef, window.firebase.where('approved', '==', false));
-        const snapshot = await window.firebase.getDocs(pendingQuery);
-        
-        const pendingGemsList = document.getElementById('pendingGems');
-        pendingGemsList.innerHTML = '';
-        
-        if (snapshot.empty) {
-            pendingGemsList.innerHTML = '<p>No pending gems to review.</p>';
-            return;
-        }
-        
-        snapshot.forEach((doc) => {
-            const gem = doc.data();
-            const gemElement = document.createElement('div');
-            gemElement.className = 'pending-gem-item';
-            gemElement.innerHTML = `
-                <h4>${gem.name}</h4>
-                <p><strong>Location:</strong> ${gem.location}</p>
-                <p><strong>Category:</strong> ${gem.category}</p>
-                <p><strong>Description:</strong> ${gem.description}</p>
-                <p><strong>Submitted by:</strong> ${gem.submittedBy}</p>
-                <div class="admin-actions">
-                    <button onclick="approveGem('${doc.id}')" class="btn-success">Approve</button>
-                    <button onclick="rejectGem('${doc.id}')" class="btn-danger">Reject</button>
-                </div>
-            `;
-            pendingGemsList.appendChild(gemElement);
-        });
-    } catch (error) {
-        console.error('Error loading pending gems:', error);
-    }
-}
-
-// Approve a hidden gem
-async function approveGem(gemId) {
-    try {
-        const gemRef = window.firebase.doc(window.firebase.db, 'hiddenGems', gemId);
-        await window.firebase.updateDoc(gemRef, {
-            approved: true,
-            approvedAt: window.firebase.serverTimestamp()
-        });
-        showMessage('Hidden gem approved successfully!', 'success');
-        loadPendingGems();
-    } catch (error) {
-        console.error('Error approving gem:', error);
-        showMessage('Error approving gem', 'error');
-    }
-}
-
-// Reject a hidden gem
-async function rejectGem(gemId) {
-    try {
-        const gemRef = window.firebase.doc(window.firebase.db, 'hiddenGems', gemId);
-        await window.firebase.deleteDoc(gemRef);
-        showMessage('Hidden gem rejected and removed', 'success');
-        loadPendingGems();
-    } catch (error) {
-        console.error('Error rejecting gem:', error);
-        showMessage('Error rejecting gem', 'error');
-    }
-}
-
-// Add new destination
-async function addNewDestination(e) {
+// Add new destination (frontend only)
+function addNewDestination(e) {
     e.preventDefault();
     
     const destination = {
+        id: Date.now(),
         name: document.getElementById('destName').value,
         country: document.getElementById('destCountry').value,
         city: document.getElementById('destCity').value,
@@ -1103,16 +1180,15 @@ async function addNewDestination(e) {
         image: document.getElementById('destImage').value,
         rating: parseFloat(document.getElementById('destRating').value),
         cost: document.getElementById('destCost').value,
-        coordinates: { lat: 0, lng: 0 }, // Default coordinates
-        bookingPrice: parseFloat(document.getElementById('destBookingPrice').value) || null,
-        bookingLink: document.getElementById('destBookingLink').value || null,
-        createdAt: window.firebase.serverTimestamp()
+        coordinates: { lat: 0, lng: 0 } // Default coordinates
     };
     
     try {
-        const destinationsRef = window.firebase.collection(window.firebase.db, 'destinations');
-        await window.firebase.addDoc(destinationsRef, destination);
-        showMessage('Destination added successfully!', 'success');
+        destinationsData.push(destination);
+        filteredDestinations = [...destinationsData];
+        populateDestinations();
+        populateFilterOptions();
+        showMessage('Destination added successfully! (Demo mode)', 'success');
         e.target.reset();
     } catch (error) {
         console.error('Error adding destination:', error);
@@ -1120,11 +1196,12 @@ async function addNewDestination(e) {
     }
 }
 
-// Add new hotel function
-async function addNewHotel(e) {
+// Add new hotel (frontend only)
+function addNewHotel(e) {
     e.preventDefault();
     
     const hotel = {
+        id: Date.now(),
         name: document.getElementById('hotelName').value,
         location: document.getElementById('hotelLocation').value,
         type: document.getElementById('hotelType').value,
@@ -1133,14 +1210,14 @@ async function addNewHotel(e) {
         rating: parseFloat(document.getElementById('hotelRating').value),
         price: parseFloat(document.getElementById('hotelPrice').value),
         amenities: document.getElementById('hotelAmenities').value.split(',').map(a => a.trim()),
-        bookingLink: document.getElementById('hotelBookingLink').value,
-        createdAt: window.firebase.serverTimestamp()
+        bookingLink: "https://example.com/book"
     };
     
     try {
-        const hotelsRef = window.firebase.collection(window.firebase.db, 'hotels');
-        await window.firebase.addDoc(hotelsRef, hotel);
-        showMessage('Hotel added successfully!', 'success');
+        hotelsData.push(hotel);
+        filteredHotels = [...hotelsData];
+        populateHotels();
+        showMessage('Hotel added successfully! (Demo mode)', 'success');
         e.target.reset();
     } catch (error) {
         console.error('Error adding hotel:', error);
@@ -1148,5 +1225,5 @@ async function addNewHotel(e) {
     }
 }
 
-console.log('LostnLocal Website loaded successfully with Firebase integration!');
+console.log('LostnLocal Website loaded successfully (Frontend Only)!');
 

@@ -38,7 +38,7 @@ A modern, responsive travel discovery website built with HTML, CSS, and JavaScri
 
 ### 📞 User Engagement
 - Contact form for feedback and inquiries
-- Firebase integration for data storage
+- Frontend-only authentication system
 - Success/error message system
 
 ## Technology Stack
@@ -47,28 +47,28 @@ A modern, responsive travel discovery website built with HTML, CSS, and JavaScri
 - **Styling**: Custom CSS with Flexbox and Grid
 - **Icons**: Font Awesome 6.0
 - **Fonts**: Google Fonts (Poppins)
-- **Backend**: Firebase Firestore
+- **Data Storage**: Local Storage (Browser)
 - **Images**: Unsplash API for high-quality travel photos
 
 ## Project Structure
 
 ```
-wt-project/
+lostnlocal/
 ├── index.html          # Main HTML file
+├── auth.html           # Authentication page
 ├── styles.css          # CSS styles and responsive design
-├── script.js           # JavaScript functionality
-├── firebase-config.js  # Firebase configuration
-└── README.md          # Project documentation
+├── auth-styles.css     # Authentication page styles
+├── script.js           # Main JavaScript functionality
+├── auth.js             # Authentication JavaScript
+├── README.md           # Project documentation
+└── SETUP.md            # Setup instructions
 ```
 
 ## Setup Instructions
 
 1. **Clone or download the project files**
 2. **Open `index.html` in a web browser**
-3. **For Firebase integration** (optional):
-   - The Firebase configuration is already set up
-   - Data will be stored in Firestore collections: `hiddenGems`, `contacts`
-   - Works offline with local data fallback
+3. **That's it!** - No server setup required
 
 ## Key Features Implementation
 
@@ -100,15 +100,26 @@ wt-project/
 ## Sample Data
 
 The website includes sample data for:
-- 6 popular destinations
-- 6 cultural insights
-- 4 hotel recommendations
-- 3 hidden gems
+- 3 popular destinations
+- 3 cultural insights
+- 2 hotel recommendations
+- 2 hidden gems
+
+## Authentication System
+
+The website includes a frontend-only authentication system:
+- **Sign Up**: Create new accounts with admin code support
+- **Sign In**: Login with email and password
+- **Guest Mode**: Browse without creating an account
+- **Admin Features**: Special admin panel for managing content
+
+### Admin Access
+To access admin features, use admin code `#14224#` or `admin123` during signup.
 
 ## Future Enhancements
 
 - Google Maps integration
-- User authentication
+- Backend API integration
 - Review and rating system
 - Social media sharing
 - Advanced search with autocomplete

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LostnLocal - Admin Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .admin-only {
+            background: #fff3cd;
+            border-color: #ffeaa7;
+        }
+        .user-info {
+            background: #d1ecf1;
+            border-color: #bee5eb;
+        }
+        .btn {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-primary { background: #007bff; color: white; }
+        .btn-success { background: #28a745; color: white; }
+        .btn-warning { background: #ffc107; color: black; }
+        .btn-danger { background: #dc3545; color: white; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>LostnLocal Admin Test Page</h1>
+        <p>This page helps you test the admin functionality.</p>
+        
+        <div class="test-section user-info">
+            <h3>Current User Status</h3>
+            <div id="userStatus">
+                <p>Loading user information...</p>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>Authentication Actions</h3>
+            <a href="auth.html" class="btn btn-primary">Go to Login/Signup</a>
+            <button onclick="checkUserStatus()" class="btn btn-success">Refresh Status</button>
+            <button onclick="clearAuth()" class="btn btn-warning">Clear Auth Data</button>
+        </div>
+        
+        <div class="test-section admin-only" id="adminSection">
+            <h3>Admin Features (Admin Only)</h3>
+            <p>This section should only be visible to admin users.</p>
+            <button onclick="testAdminFunction()" class="btn btn-primary">Test Admin Function</button>
+        </div>
+        
+        <div class="test-section">
+            <h3>Test Results</h3>
+            <div id="testResults">
+                <p>No tests run yet.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let isAdmin = false;
+        
+        // Check user status on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            checkUserStatus();
+        });
+        
+        function checkUserStatus() {
+            const savedUser = localStorage.getItem('currentUser');
+            const userStatusDiv = document.getElementById('userStatus');
+            const adminSection = document.getElementById('adminSection');
+            
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                isAdmin = currentUser.isAdmin || false;
+                
+                userStatusDiv.innerHTML = `
+                    <p><strong>Logged In:</strong> Yes</p>
+                    <p><strong>User ID:</strong> ${currentUser.uid || 'N/A'}</p>
+                    <p><strong>Email:</strong> ${currentUser.email || 'N/A'}</p>
+                    <p><strong>Display Name:</strong> ${currentUser.displayName || 'N/A'}</p>
+                    <p><strong>Is Admin:</strong> ${isAdmin ? 'Yes' : 'No'}</p>
+                    <p><strong>Is Anonymous:</strong> ${currentUser.isAnonymous ? 'Yes' : 'No'}</p>
+                `;
+                
+                // Show/hide admin section based on admin status
+                if (isAdmin && currentUser.isAdmin === true) {
+                    adminSection.classList.remove('hidden');
+                    adminSection.style.display = 'block';
+                } else {
+                    adminSection.classList.add('hidden');
+                    adminSection.style.display = 'none';
+                }
+                
+            } else {
+                currentUser = null;
+                isAdmin = false;
+                
+                userStatusDiv.innerHTML = `
+                    <p><strong>Logged In:</strong> No</p>
+                    <p><strong>Status:</strong> Not authenticated</p>
+                `;
+                
+                adminSection.classList.add('hidden');
+                adminSection.style.display = 'none';
+            }
+        }
+        
+        function testAdminFunction() {
+            if (!isAdmin || !currentUser || !currentUser.isAdmin) {
+                alert('Access denied! You must be logged in as an admin to use this function.');
+                return;
+            }
+            
+            const testResults = document.getElementById('testResults');
+            testResults.innerHTML = `
+                <p><strong>Admin Function Test:</strong> SUCCESS</p>
+                <p>Admin user ${currentUser.displayName} has successfully accessed admin function.</p>
+                <p>Timestamp: ${new Date().toLocaleString()}</p>
+            `;
+        }
+        
+        function clearAuth() {
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('authToken');
+            currentUser = null;
+            isAdmin = false;
+            checkUserStatus();
+            
+            const testResults = document.getElementById('testResults');
+            testResults.innerHTML = '<p>Authentication data cleared. Please refresh the page or go to login.</p>';
+        }
+    </script>
+</body>
+</html>
