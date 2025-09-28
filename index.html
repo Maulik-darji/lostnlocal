@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LostnLocal - Explore the World</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-globe-americas"></i>
+                <span>LostnLocal</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#home" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#destinations" class="nav-link">Destinations</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#cultural" class="nav-link">Cultural Insights</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#budget" class="nav-link">Budget Tools</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#hotels" class="nav-link">Hotels</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#hidden-gems" class="nav-link">Hidden Gems</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#contact" class="nav-link">Contact</a>
+                </li>
+                <li class="nav-item" id="authNavItem">
+                    <a href="auth.html" class="nav-link" id="authLink">Login</a>
+                </li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>Discover Amazing Places Around the World</h1>
+            <p>Explore destinations, plan your budget, and uncover hidden gems with LostnLocal - your gateway to authentic travel experiences</p>
+            <div class="search-bar">
+                <input type="text" id="mainSearch" placeholder="Search destinations, countries, or cities...">
+                <button class="search-btn">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </div>
+        <div class="hero-image">
+            <img src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Travel Destination">
+        </div>
+    </section>
+
+    <!-- Destination Explorer -->
+    <section id="destinations" class="destinations">
+        <div class="container">
+            <h2>Destination Explorer</h2>
+            <div class="filter-section">
+                <div class="filter-group">
+                    <label for="countryFilter">Country:</label>
+                    <select id="countryFilter">
+                        <option value="">All Countries</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="categoryFilter">Category:</label>
+                    <select id="categoryFilter">
+                        <option value="">All Categories</option>
+                        <option value="landmarks">Landmarks</option>
+                        <option value="nature">Nature Spots</option>
+                        <option value="cultural">Cultural Sites</option>
+                        <option value="adventure">Adventure Activities</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="cityFilter">City:</label>
+                    <select id="cityFilter">
+                        <option value="">All Cities</option>
+                    </select>
+                </div>
+            </div>
+            <div class="destinations-grid" id="destinationsGrid">
+                <!-- Destinations will be populated by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Cultural Insights -->
+    <section id="cultural" class="cultural-insights">
+        <div class="container">
+            <h2>Cultural Insights</h2>
+            <div class="cultural-grid" id="culturalGrid">
+                <!-- Cultural insights will be populated by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Budget Tools -->
+    <section id="budget" class="budget-tools">
+        <div class="container">
+            <h2>Travel Budget Tools</h2>
+            <div class="budget-tools-grid">
+                <!-- Expense Calculator -->
+                <div class="budget-card">
+                    <h3><i class="fas fa-calculator"></i> Travel Expense Calculator</h3>
+                    <form id="expenseCalculator">
+                        <div class="form-group">
+                            <label for="travelers">Number of Travelers:</label>
+                            <input type="number" id="travelers" min="1" value="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="travelDays">Travel Days:</label>
+                            <input type="number" id="travelDays" min="1" value="7" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="dailyExpenses">Daily Expenses ($):</label>
+                            <input type="number" id="dailyExpenses" min="0" value="100" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="activities">Activities Cost ($):</label>
+                            <input type="number" id="activities" min="0" value="200" required>
+                        </div>
+                        <button type="submit" class="btn-primary">Calculate Total</button>
+                    </form>
+                    <div id="expenseResult" class="result-display"></div>
+                </div>
+
+                <!-- Budget Estimation Tool -->
+                <div class="budget-card">
+                    <h3><i class="fas fa-chart-line"></i> Trip Budget Estimation</h3>
+                    <form id="budgetEstimator">
+                        <div class="form-group">
+                            <label for="destination">Destination:</label>
+                            <input type="text" id="destination" placeholder="Enter destination" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="travelStyle">Travel Style:</label>
+                            <select id="travelStyle" required>
+                                <option value="budget">Budget</option>
+                                <option value="mid-range" selected>Mid-Range</option>
+                                <option value="luxury">Luxury</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="tripDuration">Trip Duration (days):</label>
+                            <input type="number" id="tripDuration" min="1" value="7" required>
+                        </div>
+                        <button type="submit" class="btn-primary">Estimate Budget</button>
+                    </form>
+                    <div id="budgetResult" class="result-display"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Hotel & Stay Suggestions -->
+    <section id="hotels" class="hotels">
+        <div class="container">
+            <h2>Hotel & Stay Suggestions</h2>
+            <div class="hotel-filters">
+                <div class="filter-group">
+                    <label for="hotelLocation">Location:</label>
+                    <input type="text" id="hotelLocation" placeholder="Enter city or area">
+                </div>
+                <div class="filter-group">
+                    <label for="priceRange">Price Range:</label>
+                    <select id="priceRange">
+                        <option value="">All Prices</option>
+                        <option value="budget">Budget ($0-100)</option>
+                        <option value="mid-range">Mid-Range ($100-300)</option>
+                        <option value="luxury">Luxury ($300+)</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="ratingFilter">Minimum Rating:</label>
+                    <select id="ratingFilter">
+                        <option value="">Any Rating</option>
+                        <option value="3">3+ Stars</option>
+                        <option value="4">4+ Stars</option>
+                        <option value="5">5 Stars</option>
+                    </select>
+                </div>
+                <button id="searchHotels" class="btn-primary">Search Hotels</button>
+            </div>
+            <div class="hotels-grid" id="hotelsGrid">
+                <!-- Hotels will be populated by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Hidden Gems -->
+    <section id="hidden-gems" class="hidden-gems">
+        <div class="container">
+            <h2>Hidden Gems</h2>
+            <div class="hidden-gems-content">
+                <div class="hidden-gems-grid" id="hiddenGemsGrid">
+                    <!-- Hidden gems will be populated by JavaScript -->
+                </div>
+                <div class="contribute-section">
+                    <h3>Share Your Hidden Gem</h3>
+                    <form id="contributeForm">
+                        <div class="form-group">
+                            <label for="gemName">Place Name:</label>
+                            <input type="text" id="gemName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="gemLocation">Location:</label>
+                            <input type="text" id="gemLocation" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="gemDescription">Description:</label>
+                            <textarea id="gemDescription" rows="4" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="gemCategory">Category:</label>
+                            <select id="gemCategory" required>
+                                <option value="nature">Nature</option>
+                                <option value="cultural">Cultural</option>
+                                <option value="adventure">Adventure</option>
+                                <option value="food">Food</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-primary">Submit Hidden Gem</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2>Contact Us</h2>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <h3>Get in Touch</h3>
+                    <p>Have questions about destinations or need help planning your trip? We're here to help!</p>
+                    <div class="contact-details">
+                        <div class="contact-item">
+                            <i class="fas fa-envelope"></i>
+                            <span>info@traveldiscovery.com</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-phone"></i>
+                            <span>+1 (555) 123-4567</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>123 Travel Street, Adventure City</span>
+                        </div>
+                    </div>
+                </div>
+                <form id="contactForm" class="contact-form">
+                    <div class="form-group">
+                        <label for="contactName">Name:</label>
+                        <input type="text" id="contactName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contactEmail">Email:</label>
+                        <input type="email" id="contactEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contactSubject">Subject:</label>
+                        <input type="text" id="contactSubject" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contactMessage">Message:</label>
+                        <textarea id="contactMessage" rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>LostnLocal</h3>
+                    <p>Your gateway to authentic travel experiences and hidden gems around the world.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#destinations">Destinations</a></li>
+                        <li><a href="#cultural">Cultural Insights</a></li>
+                        <li><a href="#budget">Budget Tools</a></li>
+                        <li><a href="#hotels">Hotels</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#contact">Contact Us</a></li>
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 LostnLocal. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal for destination details -->
+    <div id="destinationModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+</body>
+</html>
+

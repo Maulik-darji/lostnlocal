@@ -1,0 +1,7 @@
+[2025-09-28 19:02:30] [ERROR] [::1] Database connection failed: Database connection failed: SQLSTATE[HY000] [1045] Access denied for user 'root'@'localhost' (using password: NO)
+[2025-09-28 19:02:30] [ERROR] [::1] Database connection failed: Database connection failed: SQLSTATE[HY000] [1045] Access denied for user 'root'@'localhost' (using password: NO)
+[2025-09-28 19:02:30] [ERROR] [::1] Database connection failed: Database connection failed: SQLSTATE[HY000] [1045] Access denied for user 'root'@'localhost' (using password: NO)
+[2025-09-28 19:02:30] [ERROR] [::1] Database connection failed: Database connection failed: SQLSTATE[HY000] [1045] Access denied for user 'root'@'localhost' (using password: NO)
+[2025-09-28 19:12:08] [INFO] [::1] Database connection established successfully
+[2025-09-28 19:15:06] [INFO] [::1] Database connection established successfully
+[2025-09-28 19:15:12] [INFO] [::1] Database connection established successfully

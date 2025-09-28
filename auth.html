@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LostnLocal - Join the Adventure</title>
+    <link rel="stylesheet" href="auth-styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+</head>
+<body>
+    <!-- Background Animation -->
+    <div class="bg-animation">
+        <div class="floating-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>Hostinger
+            <div class="shape shape-4"></div>
+            <div class="shape shape-5"></div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar auth-navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-compass"></i>
+                <span>LostnLocal</span>
+            </div>
+            <div class="nav-actions">
+                <a href="index.html" class="btn-secondary">
+                    <i class="fas fa-home"></i>
+                    Back to Home
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Auth Container -->
+    <div class="auth-main-container">
+        <div class="auth-wrapper">
+            <!-- Left Side - Branding -->
+            <div class="auth-branding">
+                <div class="branding-content">
+                    <div class="brand-logo">
+                        <i class="fas fa-map-marked-alt"></i>
+                        <h1>LostnLocal</h1>
+                    </div>
+                    <h2>Discover Hidden Gems</h2>
+                    <p>Join thousands of travelers exploring authentic experiences and uncovering the world's best-kept secrets.</p>
+                    
+                    <div class="features-list">
+                        <div class="feature-item">
+                            <i class="fas fa-map-pin"></i>
+                            <span>Explore unique destinations</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-users"></i>
+                            <span>Connect with fellow travelers</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-star"></i>
+                            <span>Share your hidden gems</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-calculator"></i>
+                            <span>Plan your perfect trip</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side - Auth Forms -->
+            <div class="auth-forms">
+                <div class="auth-header">
+                    <h3>Welcome to the Adventure</h3>
+                    <p>Choose how you'd like to join us</p>
+                </div>
+
+                <!-- Auth Tabs -->
+                <div class="auth-tabs">
+                    <button class="tab-btn active" data-tab="signup">
+                        <i class="fas fa-user-plus"></i>
+                        Create Account
+                    </button>
+                    <button class="tab-btn" data-tab="login">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Sign In
+                    </button>
+                </div>
+
+                <!-- Signup Form -->
+                <div class="auth-form active" id="signupForm">
+                    <form id="signupFormElement" class="modern-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="signupName">
+                                    <i class="fas fa-user"></i>
+                                    Full Name
+                                </label>
+                                <input type="text" id="signupName" placeholder="Enter your full name" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="signupEmail">
+                                    <i class="fas fa-envelope"></i>
+                                    Email Address
+                                </label>
+                                <input type="email" id="signupEmail" placeholder="Enter your email" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="signupPassword">
+                                    <i class="fas fa-lock"></i>
+                                    Password
+                                </label>
+                                <input type="password" id="signupPassword" placeholder="Create a strong password" required minlength="6">
+                                <div class="password-strength">
+                                    <div class="strength-bar">
+                                        <div class="strength-fill"></div>
+                                    </div>
+                                    <span class="strength-text">Password strength</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="confirmPassword">
+                                    <i class="fas fa-lock"></i>
+                                    Confirm Password
+                                </label>
+                                <input type="password" id="confirmPassword" placeholder="Confirm your password" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="adminCode">
+                                    <i class="fas fa-key"></i>
+                                    Admin Code (Optional)
+                                </label>
+                                <input type="text" id="adminCode" placeholder="Enter admin code if you have one">
+                                <small class="form-hint">Only enter this if you have admin privileges</small>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary btn-large">
+                                <i class="fas fa-rocket"></i>
+                                Create Account
+                            </button>
+                        </div>
+
+                        <div class="form-footer">
+                            <p>Already have an account? <a href="#" class="switch-tab" data-tab="login">Sign in here</a></p>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Login Form -->
+                <div class="auth-form" id="loginForm">
+                    <form id="loginFormElement" class="modern-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="loginEmail">
+                                    <i class="fas fa-envelope"></i>
+                                    Email Address
+                                </label>
+                                <input type="email" id="loginEmail" placeholder="Enter your email" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="loginPassword">
+                                    <i class="fas fa-lock"></i>
+                                    Password
+                                </label>
+                                <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary btn-large">
+                                <i class="fas fa-sign-in-alt"></i>
+                                Sign In
+                            </button>
+                        </div>
+
+                        <div class="form-footer">
+                            <p>Don't have an account? <a href="#" class="switch-tab" data-tab="signup">Create one here</a></p>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Guest Access -->
+                <div class="guest-section">
+                    <div class="divider">
+                        <span>or</span>
+                    </div>
+                    <button id="guestLogin" class="btn-guest">
+                        <i class="fas fa-user-secret"></i>
+                        Continue as Guest
+                    </button>
+                    <p class="guest-note">Browse content without creating an account</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="auth-footer">
+        <div class="footer-content">
+            <p>&copy; 2024 LostnLocal. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Help Center</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="auth.js"></script>
+</body>
+</html>
