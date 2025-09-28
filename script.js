@@ -240,7 +240,11 @@ function loadSampleData() {
             image: "https://images.unsplash.com/photo-1511739001486-6bfe10ce785f?w=400",
             rating: 4.8,
             cost: "$$$",
-            coordinates: { lat: 48.8584, lng: 2.2945 }
+            coordinates: { lat: 48.8584, lng: 2.2945 },
+            tourPrice: 45,
+            tourDuration: "2 hours",
+            tourIncludes: ["Skip-the-line access", "Professional guide", "Audio headset", "Small group (max 15 people)"],
+            tourTimes: ["9:00 AM", "11:00 AM", "2:00 PM", "4:00 PM"]
         },
         {
             id: 2,
@@ -252,7 +256,11 @@ function loadSampleData() {
             image: "https://images.unsplash.com/photo-1526392060635-9d6019884377?w=400",
             rating: 4.9,
             cost: "$$",
-            coordinates: { lat: -13.1631, lng: -72.5450 }
+            coordinates: { lat: -13.1631, lng: -72.5450 },
+            tourPrice: 120,
+            tourDuration: "Full day",
+            tourIncludes: ["Round-trip transportation", "Professional guide", "Lunch", "Entrance fees", "Small group (max 12 people)"],
+            tourTimes: ["6:00 AM"]
         },
         {
             id: 3,
@@ -264,7 +272,43 @@ function loadSampleData() {
             image: "https://images.unsplash.com/photo-1583212292454-1fe6229603b7?w=400",
             rating: 4.7,
             cost: "$$$",
-            coordinates: { lat: -18.2871, lng: 147.6992 }
+            coordinates: { lat: -18.2871, lng: 147.6992 },
+            tourPrice: 180,
+            tourDuration: "8 hours",
+            tourIncludes: ["Snorkeling equipment", "Lunch on boat", "Professional guide", "Underwater camera rental", "Small group (max 20 people)"],
+            tourTimes: ["7:00 AM", "8:00 AM"]
+        },
+        {
+            id: 4,
+            name: "Santorini Sunset Tour",
+            country: "Greece",
+            city: "Santorini",
+            category: "nature",
+            description: "Experience the magical sunset from Oia village.",
+            image: "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=400",
+            rating: 4.9,
+            cost: "$$",
+            coordinates: { lat: 36.3932, lng: 25.4615 },
+            tourPrice: 85,
+            tourDuration: "4 hours",
+            tourIncludes: ["Transportation", "Professional guide", "Wine tasting", "Small group (max 10 people)"],
+            tourTimes: ["4:00 PM"]
+        },
+        {
+            id: 5,
+            name: "Tokyo Food Tour",
+            country: "Japan",
+            city: "Tokyo",
+            category: "cultural",
+            description: "Explore authentic Japanese cuisine in local neighborhoods.",
+            image: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=400",
+            rating: 4.8,
+            cost: "$$",
+            coordinates: { lat: 35.6762, lng: 139.6503 },
+            tourPrice: 95,
+            tourDuration: "3 hours",
+            tourIncludes: ["Food tastings", "Professional guide", "Cultural insights", "Small group (max 8 people)"],
+            tourTimes: ["11:00 AM", "6:00 PM"]
         }
     ];
     
@@ -432,26 +476,66 @@ function createDestinationCard(destination) {
                 <span class="category-badge">${destination.category}</span>
                 <span>${destination.country}, ${destination.city}</span>
             </div>
+            <div class="destination-pricing">
+                <div class="tour-price">$${destination.tourPrice}</div>
+                <div class="tour-duration">${destination.tourDuration}</div>
+            </div>
+            <div class="destination-actions">
+                <button class="btn-secondary btn-small" onclick="event.stopPropagation(); showDestinationModal(${destination.id})">
+                    <i class="fas fa-info-circle"></i> Details
+                </button>
+                <button class="btn-primary btn-small" onclick="event.stopPropagation(); openBookingModal(${destination.id})">
+                    <i class="fas fa-calendar-plus"></i> Book Tour
+                </button>
+            </div>
         </div>
     `;
     
-    card.addEventListener('click', () => showDestinationModal(destination));
     return card;
 }
 
 // Show destination modal
-function showDestinationModal(destination) {
+function showDestinationModal(destinationId) {
+    const destination = destinationsData.find(d => d.id === destinationId);
+    if (!destination) return;
+    
     const modal = document.getElementById('destinationModal');
     const modalContent = document.getElementById('modalContent');
     
     modalContent.innerHTML = `
         <h2>${destination.name}</h2>
         <img src="${destination.image}" alt="${destination.name}" style="width: 100%; height: 300px; object-fit: cover; border-radius: 10px; margin: 1rem 0;">
-        <p><strong>Location:</strong> ${destination.city}, ${destination.country}</p>
-        <p><strong>Category:</strong> ${destination.category}</p>
-        <p><strong>Rating:</strong> ${destination.rating}/5</p>
-        <p><strong>Cost Level:</strong> ${destination.cost}</p>
-        <p><strong>Description:</strong> ${destination.description}</p>
+        <div class="destination-details">
+            <p><strong>Location:</strong> ${destination.city}, ${destination.country}</p>
+            <p><strong>Category:</strong> ${destination.category}</p>
+            <p><strong>Rating:</strong> ${destination.rating}/5 ⭐</p>
+            <p><strong>Cost Level:</strong> ${destination.cost}</p>
+            <p><strong>Description:</strong> ${destination.description}</p>
+            
+            <div class="tour-info">
+                <h3>Tour Information</h3>
+                <div class="tour-details">
+                    <div class="tour-price-large">$${destination.tourPrice}</div>
+                    <div class="tour-duration-large">${destination.tourDuration}</div>
+                </div>
+                
+                <h4>What's Included:</h4>
+                <ul class="tour-includes">
+                    ${destination.tourIncludes.map(item => `<li><i class="fas fa-check"></i> ${item}</li>`).join('')}
+                </ul>
+                
+                <h4>Available Times:</h4>
+                <div class="tour-times">
+                    ${destination.tourTimes.map(time => `<span class="time-slot">${time}</span>`).join('')}
+                </div>
+                
+                <div class="modal-actions">
+                    <button class="btn-primary btn-large" onclick="openBookingModal(${destination.id})">
+                        <i class="fas fa-calendar-plus"></i> Book This Tour
+                    </button>
+                </div>
+            </div>
+        </div>
         <div id="map" style="height: 300px; margin: 1rem 0; border-radius: 10px;"></div>
     `;
     
@@ -564,12 +648,18 @@ function setupEventListeners() {
     document.getElementById('contactForm').addEventListener('submit', submitContactForm);
     
     // Modal close
-    document.querySelector('.close').addEventListener('click', closeModal);
+    document.querySelectorAll('.close').forEach(closeBtn => {
+        closeBtn.addEventListener('click', closeModal);
+    });
+    
     window.addEventListener('click', (e) => {
-        const modal = document.getElementById('destinationModal');
-        if (e.target === modal) {
-            closeModal();
-        }
+        const modals = ['destinationModal', 'bookingModal', 'paymentModal'];
+        modals.forEach(modalId => {
+            const modal = document.getElementById(modalId);
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
     });
 }
 
@@ -772,6 +862,480 @@ function submitContactForm(e) {
 // Close modal
 function closeModal() {
     document.getElementById('destinationModal').style.display = 'none';
+    document.getElementById('bookingModal').style.display = 'none';
+    document.getElementById('paymentModal').style.display = 'none';
+}
+
+// Open booking modal
+function openBookingModal(destinationId) {
+    const destination = destinationsData.find(d => d.id === destinationId);
+    if (!destination) return;
+    
+    // Check if user is logged in
+    if (!currentUser) {
+        showMessage('Please sign up or log in to book tours!', 'error');
+        setTimeout(() => {
+            window.location.href = 'auth.html';
+        }, 2000);
+        return;
+    }
+    
+    const modal = document.getElementById('bookingModal');
+    const modalContent = document.getElementById('bookingContent');
+    
+    modalContent.innerHTML = `
+        <div class="booking-header">
+            <h2><i class="fas fa-calendar-plus"></i> Book Tour</h2>
+            <div class="tour-summary">
+                <img src="${destination.image}" alt="${destination.name}" class="booking-image">
+                <div class="tour-info-summary">
+                    <h3>${destination.name}</h3>
+                    <p>${destination.city}, ${destination.country}</p>
+                    <div class="tour-price-summary">$${destination.tourPrice} per person</div>
+                    <div class="tour-duration-summary">${destination.tourDuration}</div>
+                </div>
+            </div>
+        </div>
+        
+        <form id="bookingForm" class="booking-form">
+            <div class="form-section">
+                <h3>Tour Details</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="tourDate">Select Date:</label>
+                        <input type="date" id="tourDate" required min="${new Date().toISOString().split('T')[0]}">
+                    </div>
+                    <div class="form-group">
+                        <label for="tourTime">Select Time:</label>
+                        <select id="tourTime" required>
+                            <option value="">Choose a time</option>
+                            ${destination.tourTimes.map(time => `<option value="${time}">${time}</option>`).join('')}
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="participants">Number of Participants:</label>
+                        <select id="participants" required>
+                            <option value="1">1 person</option>
+                            <option value="2">2 people</option>
+                            <option value="3">3 people</option>
+                            <option value="4">4 people</option>
+                            <option value="5">5 people</option>
+                            <option value="6">6 people</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h3>Contact Information</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="bookingName">Full Name:</label>
+                        <input type="text" id="bookingName" value="${currentUser.displayName || ''}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bookingEmail">Email:</label>
+                        <input type="email" id="bookingEmail" value="${currentUser.email || ''}" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="bookingPhone">Phone Number:</label>
+                        <input type="tel" id="bookingPhone" placeholder="+1 (555) 123-4567" required>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h3>Special Requests</h3>
+                <div class="form-group">
+                    <label for="specialRequests">Any special requests or dietary restrictions?</label>
+                    <textarea id="specialRequests" rows="3" placeholder="Let us know if you have any special requirements..."></textarea>
+                </div>
+            </div>
+            
+            <div class="booking-summary">
+                <h3>Booking Summary</h3>
+                <div class="summary-item">
+                    <span>Tour:</span>
+                    <span>${destination.name}</span>
+                </div>
+                <div class="summary-item">
+                    <span>Price per person:</span>
+                    <span>$${destination.tourPrice}</span>
+                </div>
+                <div class="summary-item">
+                    <span>Participants:</span>
+                    <span id="summaryParticipants">1</span>
+                </div>
+                <div class="summary-item total">
+                    <span>Total Amount:</span>
+                    <span id="totalAmount">$${destination.tourPrice}</span>
+                </div>
+            </div>
+            
+            <div class="booking-actions">
+                <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-credit-card"></i> Proceed to Payment
+                </button>
+            </div>
+        </form>
+    `;
+    
+    modal.style.display = 'block';
+    
+    // Set up event listeners
+    setupBookingFormListeners(destination);
+}
+
+// Setup booking form listeners
+function setupBookingFormListeners(destination) {
+    const participantsSelect = document.getElementById('participants');
+    const summaryParticipants = document.getElementById('summaryParticipants');
+    const totalAmount = document.getElementById('totalAmount');
+    
+    // Update total when participants change
+    participantsSelect.addEventListener('change', function() {
+        const participants = parseInt(this.value);
+        const total = destination.tourPrice * participants;
+        
+        summaryParticipants.textContent = `${participants} ${participants === 1 ? 'person' : 'people'}`;
+        totalAmount.textContent = `$${total}`;
+    });
+    
+    // Handle form submission
+    document.getElementById('bookingForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        processBooking(destination);
+    });
+}
+
+// Process booking
+function processBooking(destination) {
+    const formData = {
+        tourDate: document.getElementById('tourDate').value,
+        tourTime: document.getElementById('tourTime').value,
+        participants: parseInt(document.getElementById('participants').value),
+        name: document.getElementById('bookingName').value,
+        email: document.getElementById('bookingEmail').value,
+        phone: document.getElementById('bookingPhone').value,
+        specialRequests: document.getElementById('specialRequests').value
+    };
+    
+    // Validate form
+    if (!formData.tourDate || !formData.tourTime || !formData.participants) {
+        showMessage('Please fill in all required fields', 'error');
+        return;
+    }
+    
+    // Calculate total
+    const totalAmount = destination.tourPrice * formData.participants;
+    
+    // Store booking data
+    const bookingData = {
+        ...formData,
+        destination: destination,
+        totalAmount: totalAmount,
+        bookingId: 'BK' + Date.now(),
+        bookingDate: new Date().toISOString(),
+        status: 'pending_payment'
+    };
+    
+    // Store in localStorage for demo
+    localStorage.setItem('currentBooking', JSON.stringify(bookingData));
+    
+    // Close booking modal and open payment modal
+    closeModal();
+    openPaymentModal(bookingData);
+}
+
+// Open payment modal
+function openPaymentModal(bookingData) {
+    const modal = document.getElementById('paymentModal');
+    const modalContent = document.getElementById('paymentContent');
+    
+    modalContent.innerHTML = `
+        <div class="payment-header">
+            <h2><i class="fas fa-credit-card"></i> Payment</h2>
+            <div class="booking-reference">
+                Booking Reference: <strong>${bookingData.bookingId}</strong>
+            </div>
+        </div>
+        
+        <div class="payment-summary">
+            <h3>Payment Summary</h3>
+            <div class="summary-item">
+                <span>${bookingData.destination.name}</span>
+                <span>${bookingData.participants} ${bookingData.participants === 1 ? 'person' : 'people'}</span>
+            </div>
+            <div class="summary-item">
+                <span>Date:</span>
+                <span>${new Date(bookingData.tourDate).toLocaleDateString()}</span>
+            </div>
+            <div class="summary-item">
+                <span>Time:</span>
+                <span>${bookingData.tourTime}</span>
+            </div>
+            <div class="summary-item total">
+                <span>Total Amount:</span>
+                <span>$${bookingData.totalAmount}</span>
+            </div>
+        </div>
+        
+        <form id="paymentForm" class="payment-form">
+            <div class="form-section">
+                <h3>Payment Method</h3>
+                <div class="payment-methods">
+                    <label class="payment-method">
+                        <input type="radio" name="paymentMethod" value="card" checked>
+                        <div class="payment-option">
+                            <i class="fas fa-credit-card"></i>
+                            <span>Credit/Debit Card</span>
+                        </div>
+                    </label>
+                    <label class="payment-method">
+                        <input type="radio" name="paymentMethod" value="paypal">
+                        <div class="payment-option">
+                            <i class="fab fa-paypal"></i>
+                            <span>PayPal</span>
+                        </div>
+                    </label>
+                    <label class="payment-method">
+                        <input type="radio" name="paymentMethod" value="apple">
+                        <div class="payment-option">
+                            <i class="fab fa-apple-pay"></i>
+                            <span>Apple Pay</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="form-section" id="cardDetails">
+                <h3>Card Information</h3>
+                <div class="form-group">
+                    <label for="cardNumber">Card Number:</label>
+                    <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="expiryDate">Expiry Date:</label>
+                        <input type="text" id="expiryDate" placeholder="MM/YY" maxlength="5" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cvv">CVV:</label>
+                        <input type="text" id="cvv" placeholder="123" maxlength="4" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="cardName">Name on Card:</label>
+                    <input type="text" id="cardName" placeholder="John Doe" required>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h3>Billing Address</h3>
+                <div class="form-group">
+                    <label for="billingAddress">Address:</label>
+                    <input type="text" id="billingAddress" placeholder="123 Main Street" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="billingCity">City:</label>
+                        <input type="text" id="billingCity" placeholder="New York" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="billingZip">ZIP Code:</label>
+                        <input type="text" id="billingZip" placeholder="10001" required>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="payment-actions">
+                <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn-primary btn-large">
+                    <i class="fas fa-lock"></i> Pay $${bookingData.totalAmount}
+                </button>
+            </div>
+            
+            <div class="payment-security">
+                <i class="fas fa-shield-alt"></i>
+                <span>Your payment is secure and encrypted</span>
+            </div>
+        </form>
+    `;
+    
+    modal.style.display = 'block';
+    
+    // Set up payment form listeners
+    setupPaymentFormListeners(bookingData);
+}
+
+// Setup payment form listeners
+function setupPaymentFormListeners(bookingData) {
+    const paymentMethodRadios = document.querySelectorAll('input[name="paymentMethod"]');
+    const cardDetails = document.getElementById('cardDetails');
+    
+    // Show/hide card details based on payment method
+    paymentMethodRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (this.value === 'card') {
+                cardDetails.style.display = 'block';
+            } else {
+                cardDetails.style.display = 'none';
+            }
+        });
+    });
+    
+    // Format card number input
+    const cardNumberInput = document.getElementById('cardNumber');
+    cardNumberInput.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\s/g, '').replace(/[^0-9]/gi, '');
+        let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+        e.target.value = formattedValue;
+    });
+    
+    // Format expiry date input
+    const expiryInput = document.getElementById('expiryDate');
+    expiryInput.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length >= 2) {
+            value = value.substring(0, 2) + '/' + value.substring(2, 4);
+        }
+        e.target.value = value;
+    });
+    
+    // Handle form submission
+    document.getElementById('paymentForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        processPayment(bookingData);
+    });
+}
+
+// Process payment (demo)
+function processPayment(bookingData) {
+    const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+    
+    // Simulate payment processing
+    showMessage('Processing payment...', 'info');
+    
+    setTimeout(() => {
+        // Simulate successful payment
+        const paymentData = {
+            ...bookingData,
+            paymentMethod: paymentMethod,
+            paymentId: 'PAY' + Date.now(),
+            paymentDate: new Date().toISOString(),
+            status: 'confirmed'
+        };
+        
+        // Store completed booking
+        const bookings = JSON.parse(localStorage.getItem('userBookings') || '[]');
+        bookings.push(paymentData);
+        localStorage.setItem('userBookings', JSON.stringify(bookings));
+        
+        // Clear current booking
+        localStorage.removeItem('currentBooking');
+        
+        // Close modal and show confirmation
+        closeModal();
+        showBookingConfirmation(paymentData);
+        
+    }, 2000);
+}
+
+// Show booking confirmation
+function showBookingConfirmation(bookingData) {
+    const modal = document.createElement('div');
+    modal.className = 'modal confirmation-modal';
+    modal.style.display = 'block';
+    
+    modal.innerHTML = `
+        <div class="modal-content confirmation-content">
+            <div class="confirmation-header">
+                <i class="fas fa-check-circle success-icon"></i>
+                <h2>Booking Confirmed!</h2>
+                <p>Your tour has been successfully booked</p>
+            </div>
+            
+            <div class="confirmation-details">
+                <div class="detail-section">
+                    <h3>Booking Information</h3>
+                    <div class="detail-item">
+                        <span>Booking Reference:</span>
+                        <span><strong>${bookingData.bookingId}</strong></span>
+                    </div>
+                    <div class="detail-item">
+                        <span>Tour:</span>
+                        <span>${bookingData.destination.name}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span>Date:</span>
+                        <span>${new Date(bookingData.tourDate).toLocaleDateString()}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span>Time:</span>
+                        <span>${bookingData.tourTime}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span>Participants:</span>
+                        <span>${bookingData.participants} ${bookingData.participants === 1 ? 'person' : 'people'}</span>
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <h3>Payment Information</h3>
+                    <div class="detail-item">
+                        <span>Payment Method:</span>
+                        <span>${bookingData.paymentMethod.toUpperCase()}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span>Payment ID:</span>
+                        <span>${bookingData.paymentId}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span>Amount Paid:</span>
+                        <span><strong>$${bookingData.totalAmount}</strong></span>
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <h3>What's Next?</h3>
+                    <ul class="next-steps">
+                        <li><i class="fas fa-envelope"></i> You'll receive a confirmation email shortly</li>
+                        <li><i class="fas fa-calendar"></i> Add this tour to your calendar</li>
+                        <li><i class="fas fa-map-marker-alt"></i> Meet at the designated meeting point 15 minutes before the tour</li>
+                        <li><i class="fas fa-phone"></i> Contact us if you have any questions</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="confirmation-actions">
+                <button class="btn-primary" onclick="this.closest('.modal').remove()">
+                    <i class="fas fa-download"></i> Download Receipt
+                </button>
+                <button class="btn-secondary" onclick="this.closest('.modal').remove()">
+                    Close
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Auto-close after 10 seconds
+    setTimeout(() => {
+        if (modal.parentNode) {
+            modal.remove();
+        }
+    }, 10000);
 }
 
 // Show message
@@ -984,6 +1548,379 @@ style.textContent = `
             opacity: 1;
             transform: translateY(0);
         }
+    }
+    
+    /* Booking and Payment Modal Styles */
+    .booking-modal, .payment-modal {
+        max-width: 800px;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    
+    .booking-header, .payment-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 10px 10px 0 0;
+        margin: -1rem -1rem 2rem -1rem;
+    }
+    
+    .booking-header h2, .payment-header h2 {
+        margin: 0 0 1rem 0;
+        font-size: 1.8rem;
+    }
+    
+    .tour-summary {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 1rem;
+        border-radius: 8px;
+    }
+    
+    .booking-image {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+    
+    .tour-info-summary h3 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.2rem;
+    }
+    
+    .tour-price-summary {
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: #ffd700;
+    }
+    
+    .booking-reference {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+    }
+    
+    .form-section {
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border-left: 4px solid #007bff;
+    }
+    
+    .form-section h3 {
+        margin: 0 0 1rem 0;
+        color: #333;
+        font-size: 1.2rem;
+    }
+    
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1rem;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: #555;
+    }
+    
+    .form-group input, .form-group select, .form-group textarea {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid #e9ecef;
+        border-radius: 6px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+    }
+    
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+        outline: none;
+        border-color: #007bff;
+    }
+    
+    .booking-summary, .payment-summary {
+        background: #e3f2fd;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+    }
+    
+    .booking-summary h3, .payment-summary h3 {
+        margin: 0 0 1rem 0;
+        color: #1976d2;
+    }
+    
+    .summary-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #bbdefb;
+    }
+    
+    .summary-item:last-child {
+        border-bottom: none;
+    }
+    
+    .summary-item.total {
+        font-weight: bold;
+        font-size: 1.1rem;
+        color: #1976d2;
+        border-top: 2px solid #1976d2;
+        margin-top: 0.5rem;
+        padding-top: 1rem;
+    }
+    
+    .booking-actions, .payment-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        margin-top: 2rem;
+    }
+    
+    .btn-small {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .btn-large {
+        padding: 1rem 2rem;
+        font-size: 1.1rem;
+    }
+    
+    .destination-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+    
+    .destination-pricing {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 1rem 0;
+        padding: 0.5rem;
+        background: #f8f9fa;
+        border-radius: 6px;
+    }
+    
+    .tour-price {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #28a745;
+    }
+    
+    .tour-duration {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+    
+    .tour-info {
+        margin: 2rem 0;
+        padding: 1.5rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+    
+    .tour-details {
+        display: flex;
+        gap: 2rem;
+        margin: 1rem 0;
+    }
+    
+    .tour-price-large {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #28a745;
+    }
+    
+    .tour-duration-large {
+        font-size: 1.2rem;
+        color: #6c757d;
+        display: flex;
+        align-items: center;
+    }
+    
+    .tour-includes {
+        list-style: none;
+        padding: 0;
+    }
+    
+    .tour-includes li {
+        padding: 0.5rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .tour-includes li i {
+        color: #28a745;
+    }
+    
+    .tour-times {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .time-slot {
+        background: #007bff;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+    }
+    
+    .modal-actions {
+        margin-top: 2rem;
+        text-align: center;
+    }
+    
+    /* Payment Method Styles */
+    .payment-methods {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .payment-method {
+        cursor: pointer;
+    }
+    
+    .payment-method input[type="radio"] {
+        display: none;
+    }
+    
+    .payment-option {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 1rem;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        background: white;
+    }
+    
+    .payment-option i {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        color: #6c757d;
+    }
+    
+    .payment-method input[type="radio"]:checked + .payment-option {
+        border-color: #007bff;
+        background: #e3f2fd;
+    }
+    
+    .payment-method input[type="radio"]:checked + .payment-option i {
+        color: #007bff;
+    }
+    
+    .payment-security {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-top: 1rem;
+        padding: 1rem;
+        background: #d4edda;
+        border-radius: 6px;
+        color: #155724;
+        font-size: 0.9rem;
+    }
+    
+    /* Confirmation Modal Styles */
+    .confirmation-modal .modal-content {
+        max-width: 600px;
+    }
+    
+    .confirmation-content {
+        text-align: center;
+    }
+    
+    .confirmation-header {
+        padding: 2rem;
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+        border-radius: 10px 10px 0 0;
+        margin: -1rem -1rem 2rem -1rem;
+    }
+    
+    .success-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        color: #ffd700;
+    }
+    
+    .confirmation-header h2 {
+        margin: 0 0 0.5rem 0;
+        font-size: 2rem;
+    }
+    
+    .confirmation-details {
+        text-align: left;
+        margin: 2rem 0;
+    }
+    
+    .detail-section {
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+    
+    .detail-section h3 {
+        margin: 0 0 1rem 0;
+        color: #333;
+        border-bottom: 2px solid #007bff;
+        padding-bottom: 0.5rem;
+    }
+    
+    .detail-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .detail-item:last-child {
+        border-bottom: none;
+    }
+    
+    .next-steps {
+        list-style: none;
+        padding: 0;
+    }
+    
+    .next-steps li {
+        padding: 0.5rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .next-steps li i {
+        color: #007bff;
+    }
+    
+    .confirmation-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 2rem;
     }
 `;
 document.head.appendChild(style);
