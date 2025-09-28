@@ -474,16 +474,18 @@
         authStyles.textContent = `
             .message {
                 position: fixed;
-                top: 20px;
+                top: 50%;
                 left: 50%;
-                transform: translateX(-50%);
+                transform: translate(-50%, -50%);
                 padding: 1rem 2rem;
                 border-radius: 8px;
                 color: white;
                 font-weight: 500;
                 z-index: 1000;
                 box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                animation: slideDown 0.3s ease-out;
+                animation: slideIn 0.3s ease-out;
+                max-width: 400px;
+                text-align: center;
             }
             
             .message.success {
@@ -498,14 +500,14 @@
                 background: #17a2b8;
             }
             
-            @keyframes slideDown {
+            @keyframes slideIn {
                 from {
                     opacity: 0;
-                    transform: translateX(-50%) translateY(-20px);
+                    transform: translate(-50%, -50%) scale(0.8);
                 }
                 to {
                     opacity: 1;
-                    transform: translateX(-50%) translateY(0);
+                    transform: translate(-50%, -50%) scale(1);
                 }
             }
             
