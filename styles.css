@@ -105,8 +105,8 @@ body {
     align-items: center;
     gap: 0.3rem;
     flex-shrink: 0;
-    max-width: 200px;
-    overflow: hidden;
+    max-width: 300px;
+    overflow: visible;
 }
 
 .welcome-text {
@@ -114,6 +114,46 @@ body {
     font-size: 0.7rem;
     color: #333;
     flex-shrink: 0;
+}
+
+.admin-dashboard-btn {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.admin-dashboard-btn:hover {
+    background: #0056b3;
+    transform: translateY(-1px);
+}
+
+.logout-btn {
+    background: transparent;
+    color: #dc3545;
+    border: 1px solid #dc3545;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: nowrap;
 }
 
 .hamburger {
@@ -739,6 +779,8 @@ section h2::after {
         flex-direction: row;
         gap: 0.3rem;
         align-items: center;
+        max-width: 350px;
+        overflow: visible;
     }
 }
 
@@ -805,6 +847,8 @@ section h2::after {
         flex-direction: column;
         gap: 0.5rem;
         align-items: center;
+        max-width: 100%;
+        overflow: visible;
     }
     
     .user-info {

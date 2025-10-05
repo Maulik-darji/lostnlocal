@@ -1,0 +1,21 @@
+# LostnLocal Virtual Host Configuration for XAMPP
+# Add this to your Apache httpd-vhosts.conf file
+
+<VirtualHost *:80>
+    DocumentRoot "C:/xampp/htdocs/lostnlocal"
+    ServerName lostnlocal.local
+    ServerAlias www.lostnlocal.local
+    
+    <Directory "C:/xampp/htdocs/lostnlocal">
+        AllowOverride All
+        Require all granted
+        Options Indexes FollowSymLinks
+    </Directory>
+    
+    ErrorLog "logs/lostnlocal_error.log"
+    CustomLog "logs/lostnlocal_access.log" common
+</VirtualHost>
+
+# Add this line to your Windows hosts file (C:\Windows\System32\drivers\etc\hosts):
+# 127.0.0.1 lostnlocal.local
+# 127.0.0.1 www.lostnlocal.local

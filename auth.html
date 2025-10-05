@@ -231,7 +231,7 @@
     <!-- Scripts -->
     <script>
         // Working Authentication System - Simplified Version
-        const API_BASE_URL = '/lostnlocal/api';
+        const API_BASE_URL = '/api';
         
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Working auth page loaded');
@@ -282,6 +282,14 @@
             document.getElementById(`${tab}Form`).classList.add('active');
         }
         
+        async function fetchJsonWithFallback(path, options) {
+            // Use .php endpoint directly since we're using PHP built-in server
+            const phpPath = path.endsWith('.php') ? path : `${path}.php`;
+            const phpResp = await fetch(`${API_BASE_URL}${phpPath}`, options);
+            const phpText = await phpResp.text();
+            return { response: phpResp, data: phpText ? JSON.parse(phpText) : null, raw: phpText };
+        }
+
         function toggleAdminCodeField() {
             const adminCodeRow = document.getElementById('adminCodeRow');
             const toggleBtn = document.getElementById('toggleAdminCode');
@@ -324,7 +332,7 @@
                 
                 console.log('Attempting to create user with:', { email, name });
                 
-                const response = await fetch(`${API_BASE_URL}/auth/signup.php`, {
+                const { response, data, raw } = await fetchJsonWithFallback('/auth/signup', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -333,14 +341,11 @@
                 });
                 
                 console.log('Response status:', response.status);
-                const responseText = await response.text();
-                console.log('Raw response:', responseText);
+                console.log('Raw response:', raw);
                 
-                if (!responseText) {
+                if (!raw) {
                     throw new Error('Empty response from server');
                 }
-                
-                const data = JSON.parse(responseText);
                 
                 if (data.success) {
                     console.log('User created successfully:', data.data.user.uid);
@@ -376,7 +381,7 @@
                 
                 console.log('Attempting to sign in with:', { email });
                 
-                const response = await fetch(`${API_BASE_URL}/auth/login.php`, {
+                const { response, data, raw } = await fetchJsonWithFallback('/auth/login', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -385,14 +390,11 @@
                 });
                 
                 console.log('Response status:', response.status);
-                const responseText = await response.text();
-                console.log('Raw response:', responseText);
+                console.log('Raw response:', raw);
                 
-                if (!responseText) {
+                if (!raw) {
                     throw new Error('Empty response from server');
                 }
-                
-                const data = JSON.parse(responseText);
                 
                 if (data.success) {
                     console.log('Sign in successful');
