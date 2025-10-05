@@ -312,28 +312,121 @@ function loadSampleData() {
         }
     ];
     
-    // Sample cultural insights data
+    // Sample cultural insights data - destination-specific
     culturalData = [
+        // Paris, France cultural insights
         {
             id: 1,
-            title: "Japanese Tea Ceremony",
-            description: "Experience the traditional art of Japanese tea preparation.",
-            destination: "Kyoto, Japan",
-            icon: "fas fa-leaf"
+            title: "French Café Culture",
+            description: "Experience the art of leisurely coffee drinking and people-watching in traditional Parisian cafés.",
+            destination: "Paris, France",
+            icon: "fas fa-coffee"
         },
         {
             id: 2,
-            title: "Flamenco Dancing",
-            description: "Immerse yourself in the passionate art of Spanish flamenco.",
-            destination: "Seville, Spain",
-            icon: "fas fa-music"
+            title: "Art de Vivre",
+            description: "Discover the French philosophy of living well through food, wine, and conversation.",
+            destination: "Paris, France",
+            icon: "fas fa-wine-glass"
         },
         {
             id: 3,
-            title: "Tango Lessons",
-            description: "Learn the sensual dance of Argentina in Buenos Aires.",
-            destination: "Buenos Aires, Argentina",
-            icon: "fas fa-heart"
+            title: "Fashion & Style",
+            description: "Learn about Parisian fashion etiquette and the art of effortless elegance.",
+            destination: "Paris, France",
+            icon: "fas fa-tshirt"
+        },
+        
+        // Cusco, Peru cultural insights
+        {
+            id: 4,
+            title: "Incan Heritage",
+            description: "Explore ancient Incan traditions, architecture, and spiritual practices still alive today.",
+            destination: "Cusco, Peru",
+            icon: "fas fa-mountain"
+        },
+        {
+            id: 5,
+            title: "Andean Textiles",
+            description: "Discover the intricate weaving techniques and symbolic patterns of traditional Peruvian textiles.",
+            destination: "Cusco, Peru",
+            icon: "fas fa-palette"
+        },
+        {
+            id: 6,
+            title: "Pachamama Worship",
+            description: "Learn about the deep connection to Mother Earth and traditional Andean spiritual practices.",
+            destination: "Cusco, Peru",
+            icon: "fas fa-leaf"
+        },
+        
+        // Cairns, Australia cultural insights
+        {
+            id: 7,
+            title: "Aboriginal Dreamtime",
+            description: "Discover the rich spiritual and cultural traditions of Australia's First Nations people.",
+            destination: "Cairns, Australia",
+            icon: "fas fa-star"
+        },
+        {
+            id: 8,
+            title: "Outback Hospitality",
+            description: "Experience the warm, laid-back Australian culture and 'no worries' attitude.",
+            destination: "Cairns, Australia",
+            icon: "fas fa-handshake"
+        },
+        {
+            id: 9,
+            title: "Marine Conservation",
+            description: "Learn about Australia's commitment to protecting the Great Barrier Reef and marine life.",
+            destination: "Cairns, Australia",
+            icon: "fas fa-fish"
+        },
+        
+        // Santorini, Greece cultural insights
+        {
+            id: 10,
+            title: "Greek Orthodox Traditions",
+            description: "Explore ancient religious customs and beautiful Orthodox churches dotting the island.",
+            destination: "Santorini, Greece",
+            icon: "fas fa-church"
+        },
+        {
+            id: 11,
+            title: "Wine Culture",
+            description: "Discover Santorini's unique volcanic wine-making traditions dating back centuries.",
+            destination: "Santorini, Greece",
+            icon: "fas fa-wine-bottle"
+        },
+        {
+            id: 12,
+            title: "Cycladic Architecture",
+            description: "Learn about the iconic white-washed buildings and blue-domed churches of the Cyclades.",
+            destination: "Santorini, Greece",
+            icon: "fas fa-home"
+        },
+        
+        // Tokyo, Japan cultural insights
+        {
+            id: 13,
+            title: "Omotenashi Spirit",
+            description: "Experience Japan's unique hospitality philosophy of anticipating guests' needs.",
+            destination: "Tokyo, Japan",
+            icon: "fas fa-bowling-ball"
+        },
+        {
+            id: 14,
+            title: "Kaiseki Dining",
+            description: "Discover the art of traditional Japanese multi-course cuisine and seasonal ingredients.",
+            destination: "Tokyo, Japan",
+            icon: "fas fa-utensils"
+        },
+        {
+            id: 15,
+            title: "Modern vs Traditional",
+            description: "Explore how Tokyo seamlessly blends cutting-edge technology with ancient traditions.",
+            destination: "Tokyo, Japan",
+            icon: "fas fa-balance-scale"
         }
     ];
     
@@ -2090,6 +2183,41 @@ function addAdminFeatures() {
                         <button type="submit" class="btn-primary">Add Hotel</button>
                     </form>
                 </div>
+                <div class="admin-card">
+                    <h3>Add New Hidden Gem</h3>
+                    <form id="addGemForm">
+                        <div class="form-group">
+                            <label for="gemName">Gem Name:</label>
+                            <input type="text" id="gemName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="gemLocation">Location:</label>
+                            <input type="text" id="gemLocation" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="gemCategory">Category:</label>
+                            <select id="gemCategory" required>
+                                <option value="food">Food & Dining</option>
+                                <option value="nature">Nature & Outdoors</option>
+                                <option value="culture">Culture & History</option>
+                                <option value="adventure">Adventure</option>
+                                <option value="relaxation">Relaxation</option>
+                                <option value="shopping">Shopping</option>
+                                <option value="nightlife">Nightlife</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="gemDescription">Description:</label>
+                            <textarea id="gemDescription" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="gemImage">Image URL:</label>
+                            <input type="url" id="gemImage" placeholder="https://example.com/image.jpg">
+                        </div>
+                        <button type="submit" class="btn-primary">Add Hidden Gem</button>
+                    </form>
+                </div>
             </div>
         </div>
     `;
@@ -2101,6 +2229,7 @@ function addAdminFeatures() {
     // Set up admin forms
     document.getElementById('addDestinationForm').addEventListener('submit', addNewDestination);
     document.getElementById('addHotelForm').addEventListener('submit', addNewHotel);
+    document.getElementById('addGemForm').addEventListener('submit', addNewGem);
 }
 
 // Add new destination (frontend only)
@@ -2127,6 +2256,18 @@ function addNewDestination(e) {
         populateFilterOptions();
         showMessage('Destination added successfully! (Demo mode)', 'success');
         e.target.reset();
+        
+        // Auto-scroll to Destination Explorer section
+        setTimeout(() => {
+            const destinationsSection = document.getElementById('destinations');
+            if (destinationsSection) {
+                destinationsSection.scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        }, 500); // Small delay to ensure the message is visible first
+        
     } catch (error) {
         console.error('Error adding destination:', error);
         showMessage('Error adding destination', 'error');
@@ -2156,9 +2297,58 @@ function addNewHotel(e) {
         populateHotels();
         showMessage('Hotel added successfully! (Demo mode)', 'success');
         e.target.reset();
+        
+        // Auto-scroll to Hotels section
+        setTimeout(() => {
+            const hotelsSection = document.getElementById('hotels');
+            if (hotelsSection) {
+                hotelsSection.scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        }, 500);
+        
     } catch (error) {
         console.error('Error adding hotel:', error);
         showMessage('Error adding hotel', 'error');
+    }
+}
+
+// Add new hidden gem (frontend only)
+function addNewGem(e) {
+    e.preventDefault();
+    
+    const gem = {
+        id: Date.now(),
+        name: document.getElementById('gemName').value,
+        location: document.getElementById('gemLocation').value,
+        category: document.getElementById('gemCategory').value,
+        description: document.getElementById('gemDescription').value,
+        image: document.getElementById('gemImage').value || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400',
+        submittedBy: currentUser ? currentUser.displayName : 'Admin'
+    };
+    
+    try {
+        hiddenGemsData.push(gem);
+        populateHiddenGems();
+        showMessage('Hidden gem added successfully! (Demo mode)', 'success');
+        e.target.reset();
+        
+        // Auto-scroll to Hidden Gems section
+        setTimeout(() => {
+            const gemsSection = document.getElementById('hiddenGems');
+            if (gemsSection) {
+                gemsSection.scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        }, 500);
+        
+    } catch (error) {
+        console.error('Error adding hidden gem:', error);
+        showMessage('Error adding hidden gem', 'error');
     }
 }
 

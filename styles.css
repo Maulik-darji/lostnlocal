@@ -367,6 +367,16 @@ section h2::after {
     background: #f8f9fa;
 }
 
+.section-subtitle {
+    text-align: center;
+    color: #666;
+    font-size: 1.1rem;
+    margin-bottom: 3rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .cultural-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -380,10 +390,22 @@ section h2::after {
     text-align: center;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease;
+    position: relative;
+    overflow: hidden;
 }
 
 .cultural-card:hover {
     transform: translateY(-5px);
+}
+
+.cultural-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
 }
 
 .cultural-card i {
@@ -401,6 +423,18 @@ section h2::after {
 .cultural-card p {
     color: #666;
     line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.cultural-card small {
+    display: inline-block;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    color: white;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-top: 0.5rem;
 }
 
 /* Budget Tools */
